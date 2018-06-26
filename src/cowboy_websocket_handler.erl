@@ -32,7 +32,7 @@
 	| {ok, Req, state(), timeout(), hibernate}
 	| {shutdown, Req}
 	when Req::cowboy_req:req().
--callback websocket_handle({text | binary | ping | pong, binary()}, Req, State)
+-callback websocket_handle(ping | pong | {text | binary | ping | pong, binary()}, Req, State)
 	-> {ok, Req, State}
 	| {ok, Req, State, hibernate}
 	| {reply, cow_ws:frame() | [cow_ws:frame()], Req, State}

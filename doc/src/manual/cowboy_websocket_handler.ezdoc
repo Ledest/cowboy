@@ -74,7 +74,7 @@ before upgrading to Websocket.
 
 Types:
 
-* InFrame = {text | binary | ping | pong, binary()}
+* InFrame = ping | pong | {text | binary | ping | pong, binary()}
 * Req = cowboy_req:req()
 * State = any()
 * OutFrame = cowboy_websocket:frame()
