@@ -36,7 +36,7 @@
 	frag_state = undefined :: cow_ws:frag_state(),
 	frag_buffer = <<>> :: binary(),
 	utf8_state = 0 :: cow_ws:utf8_state(),
-	extensions = #{} :: map()
+	extensions = #{} :: cow_ws:extensions()
 }).
 
 -spec upgrade(Req, Env, module(), any())
