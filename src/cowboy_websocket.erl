@@ -95,9 +95,15 @@ websocket_extensions(State, Req, [], []) ->
 	{ok, State, Req};
 websocket_extensions(State, Req, [], [<<", ">>|RespHeader]) ->
 	{ok, State, cowboy_req:set_resp_header(<<"sec-websocket-extensions">>, lists:reverse(RespHeader), Req)};
-websocket_extensions(State=#state{extensions=Extensions}, Req, [{<<"permessage-deflate">>, Params}|Tail], RespHeader) ->
-	%% @todo Make deflate options configurable.
-	Opts = #{level => best_compression, mem_level => 8, strategy => default},
+websocket_extensions(State = #state{env = Env, extensions = Extensions}, Req,
+		     [{<<"permessage-deflate">>, Params}|Tail], RespHeader) ->
+	Opts = #{level => case lists:keyfind(compress_level, 1, Env) of
+				{_, CL} when CL =:= default; CL =:= best_speed; CL =:= best_compression;
+					     is_integer(CL) andalso CL >= 0 andalso CL =< 9 ->
+					CL;
+				_ -> best_compression
+			  end,
+		 mem_level => 8, strategy => default},
 	case cow_ws:negotiate_permessage_deflate(Params, Extensions, Opts) of
 		{ok, RespExt, Extensions2} ->
 			Req2 = cowboy_req:set_meta(websocket_compress, true, Req),
@@ -106,9 +112,15 @@ websocket_extensions(State=#state{extensions=Extensions}, Req, [{<<"permessage-d
 		ignore ->
 			websocket_extensions(State, Req, Tail, RespHeader)
 	end;
-websocket_extensions(State=#state{extensions=Extensions}, Req, [{<<"x-webkit-deflate-frame">>, Params}|Tail], RespHeader) ->
-	%% @todo Make deflate options configurable.
-	Opts = #{level => best_compression, mem_level => 8, strategy => default},
+websocket_extensions(State = #state{env = Env, extensions = Extensions}, Req,
+		     [{<<"x-webkit-deflate-frame">>, Params}|Tail], RespHeader) ->
+	Opts = #{level => case lists:keyfind(compress_level, 1, Env) of
+				{_, CL} when CL =:= default; CL =:= best_speed; CL =:= best_compression;
+					     is_integer(CL) andalso CL >= 0 andalso CL =< 9 ->
+					CL;
+				_ -> best_compression
+			  end,
+		 mem_level => 8, strategy => default},
 	case cow_ws:negotiate_x_webkit_deflate_frame(Params, Extensions, Opts) of
 		{ok, RespExt, Extensions2} ->
 			Req2 = cowboy_req:set_meta(websocket_compress, true, Req),
