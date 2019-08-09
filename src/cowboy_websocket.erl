@@ -20,6 +20,10 @@
 -export([upgrade/4]).
 -export([handler_loop/4]).
 
+-ifndef(WS_COMPRESS_LEVEL).
+-define(WS_COMPRESS_LEVEL, best_compression).
+-endif.
+
 -type terminate_reason() :: {normal | error | remote, atom()}
 	| {remote, cow_ws:close_code(), binary()}.
 
@@ -101,7 +105,7 @@ websocket_extensions(State = #state{env = Env, extensions = Extensions}, Req,
 				{_, CL} when CL =:= default; CL =:= best_speed; CL =:= best_compression;
 					     is_integer(CL) andalso CL >= 0 andalso CL =< 9 ->
 					CL;
-				_ -> best_compression
+				_ -> ?WS_COMPRESS_LEVEL
 			  end,
 		 mem_level => 8, strategy => default},
 	case cow_ws:negotiate_permessage_deflate(Params, Extensions, Opts) of
@@ -118,7 +122,7 @@ websocket_extensions(State = #state{env = Env, extensions = Extensions}, Req,
 				{_, CL} when CL =:= default; CL =:= best_speed; CL =:= best_compression;
 					     is_integer(CL) andalso CL >= 0 andalso CL =< 9 ->
 					CL;
-				_ -> best_compression
+				_ -> ?WS_COMPRESS_LEVEL
 			  end,
 		 mem_level => 8, strategy => default},
 	case cow_ws:negotiate_x_webkit_deflate_frame(Params, Extensions, Opts) of
