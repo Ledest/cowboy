@@ -17,6 +17,12 @@
 -module(cowboy_rest).
 -behaviour(cowboy_sub_protocol).
 
+-ifdef(OTP_RELEASE).
+-if(?OTP_RELEASE >= 21).
+-compile({nowarn_deprecated_function, {erlang, get_stacktrace, 0}}).
+-endif.
+-endif.
+
 -export([upgrade/4]).
 
 -record(state, {

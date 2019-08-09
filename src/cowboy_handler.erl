@@ -30,6 +30,12 @@
 -module(cowboy_handler).
 -behaviour(cowboy_middleware).
 
+-ifdef(OTP_RELEASE).
+-if(?OTP_RELEASE >= 21).
+-compile({nowarn_deprecated_function, {erlang, get_stacktrace, 0}}).
+-endif.
+-endif.
+
 -export([execute/2]).
 -export([handler_loop/4]).
 
