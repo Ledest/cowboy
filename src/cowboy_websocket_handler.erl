@@ -20,7 +20,7 @@
 	| {normal, timeout}
 	| {error, closed}
 	| {remote, closed}
-	| {remote, cowboy_websocket:close_code(), binary()}
+	| {remote, cow_ws:close_code(), binary()}
 	| {error, badencoding}
 	| {error, badframe}
 	| {error, atom()}.
@@ -35,15 +35,15 @@
 -callback websocket_handle({text | binary | ping | pong, binary()}, Req, State)
 	-> {ok, Req, State}
 	| {ok, Req, State, hibernate}
-	| {reply, cowboy_websocket:frame() | [cowboy_websocket:frame()], Req, State}
-	| {reply, cowboy_websocket:frame() | [cowboy_websocket:frame()], Req, State, hibernate}
+	| {reply, cow_ws:frame() | [cow_ws:frame()], Req, State}
+	| {reply, cow_ws:frame() | [cow_ws:frame()], Req, State, hibernate}
 	| {shutdown, Req, State}
 	when Req::cowboy_req:req(), State::state().
 -callback websocket_info(any(), Req, State)
 	-> {ok, Req, State}
 	| {ok, Req, State, hibernate}
-	| {reply, cowboy_websocket:frame() | [cowboy_websocket:frame()], Req, State}
-	| {reply, cowboy_websocket:frame() | [cowboy_websocket:frame()], Req, State, hibernate}
+	| {reply, cow_ws:frame() | [cow_ws:frame()], Req, State}
+	| {reply, cow_ws:frame() | [cow_ws:frame()], Req, State, hibernate}
 	| {shutdown, Req, State}
 	when Req::cowboy_req:req(), State::state().
 -callback websocket_terminate(terminate_reason(), cowboy_req:req(), state())
