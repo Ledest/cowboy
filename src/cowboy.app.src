@@ -14,8 +14,7 @@
 
 {application, cowboy, [
 	{description, "Small, fast, modular HTTP server."},
-	{vsn, "1.2.1"},
-	{id, "git"},
+	{vsn, "1.2.2"},
 	{modules, []},
 	{registered, [cowboy_clock, cowboy_sup]},
 	{applications, [
