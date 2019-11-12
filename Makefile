@@ -14,7 +14,7 @@ CI_OTP = OTP_R16B01 OTP_R16B02 OTP_R16B03-1 OTP-17.0.2 OTP-17.1.2 OTP-17.2.2 OTP
 # Dependencies.
 
 DEPS = cowlib ranch
-dep_cowlib = git https://github.com/ninenines/cowlib 2.3.0
+dep_cowlib = git https://github.com/ninenines/cowlib 2.6.0
 dep_ranch_commit = 1.6.2
 
 TEST_DEPS = ct_helper gun
