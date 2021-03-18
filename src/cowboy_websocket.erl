@@ -18,9 +18,12 @@
 -behaviour(cowboy_sub_protocol).
 
 -ifdef(OTP_RELEASE).
--if(?OTP_RELEASE >= 21).
--compile({nowarn_deprecated_function, {erlang, get_stacktrace, 0}}).
+-if (?OTP_RELEASE >= 21).
+-define(EXCEPTION(Class, Reason, Stacktrace), Class:Reason:Stacktrace ->).
 -endif.
+-endif.
+-ifndef(EXCEPTION).
+-define(EXCEPTION(Class, Reason, Stacktrace), Class:Reason -> Stacktrace = erlang:get_stacktrace(),).
 -endif.
 
 -export([upgrade/4]).
@@ -162,8 +165,7 @@ handler_init(State=#state{env=Env, transport=Transport,
 		{shutdown, Req2} ->
 			cowboy_req:ensure_response(Req2, 400),
 			{ok, Req2, [{result, closed}|Env]}
-	catch Class:Reason ->
-		Stacktrace = erlang:get_stacktrace(),
+	catch ?EXCEPTION(Class, Reason, Stacktrace)
 		cowboy_req:maybe_reply(Stacktrace, Req),
 		erlang:Class([
 			{reason, Reason},
@@ -386,12 +388,12 @@ handler_call(State=#state{handler=Handler}, Req, HandlerState,
 			end;
 		{shutdown, Req2, HandlerState2} ->
 			websocket_close(State, Req2, HandlerState2, {normal, shutdown})
-	catch Class:Reason ->
+	catch ?EXCEPTION(Class, Reason, Stacktrace)
 		_ = websocket_close(State, Req, HandlerState, {error, handler}),
 		erlang:Class([
 			{reason, Reason},
 			{mfa, {Handler, Callback, 3}},
-			{stacktrace, erlang:get_stacktrace()},
+			{stacktrace, Stacktrace},
 			{msg, Message},
 			{req, cowboy_req:to_list(Req)},
 			{state, HandlerState}
@@ -446,11 +448,11 @@ handler_terminate(#state{env=Env, handler=Handler},
 		Req, HandlerState, TerminateReason) ->
 	try
 		Handler:websocket_terminate(TerminateReason, Req, HandlerState)
-	catch Class:Reason ->
+	catch ?EXCEPTION(Class, Reason, Stacktrace)
 		erlang:Class([
 			{reason, Reason},
 			{mfa, {Handler, websocket_terminate, 3}},
-			{stacktrace, erlang:get_stacktrace()},
+			{stacktrace, Stacktrace},
 			{req, cowboy_req:to_list(Req)},
 			{state, HandlerState},
 			{terminate_reason, TerminateReason}
