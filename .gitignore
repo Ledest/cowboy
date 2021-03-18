@@ -1,3 +1,6 @@
+/.erlang.mk/
+/.rebar/
+/cowboy.d
 .cowboy.plt
 .erlang.mk.packages.*
 _rel
